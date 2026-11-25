@@ -3,17 +3,20 @@ import json
 
 from . import ledger as v
 
+ACCEPTED_JOINS = (F(651, 4), F(150))
+
 def read_number(value):
     if isinstance(value,bool) or not isinstance(value,(int,str)):
         raise ValueError('Write endpoints and nonintegral numbers as strings or integers.')
     return F(value)
 
-def grade(manifest):
+def grade(manifest, *, join=ACCEPTED_JOINS[0]):
+    if join not in ACCEPTED_JOINS:
+        raise ValueError('Choose an accepted coverage endpoint.')
     spec=json.loads(manifest.read_text())
     target=read_number(spec['target'])
-    join=F(651,4)
     if not 40<=target<=join:
-        raise ValueError('Choose a target in [40,651/4].')
+        raise ValueError(f'Choose a target in [40,{join}].')
     cells=[]
     start=target
     for cell in spec['cells']:
